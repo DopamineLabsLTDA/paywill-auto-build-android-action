@@ -1,0 +1,50 @@
+name: 'auto-build-android'
+description: 'Build the application and uploads it to the Google Play Store'
+inputs:
+  path-to-control-file:
+    description: 'The TSX file that holds the version-string and build number for Android'
+    required: true
+    default: constants.tsx
+
+  name-of-version-string:
+    description: 'The name of the version-string variable on the TSX file'
+    required: true
+    default: PUBLIC_VERSION
+
+  name-of-build-string:
+    description: 'The name of the build version variable on the TSX file'
+    required: true
+    default: BUILD_ANDROID
+
+  java-version:
+    description: 'Java version to use'
+    required: true
+    default: '17'
+
+  node-version:
+    description: 'Node version to use'
+    required: true
+    default: 16.x
+
+
+runs:
+  using: "composite"
+  steps:
+    - name: Get version-string information from file
+      shell: bash
+      run:  echo "VERSION_STRING = $(grep -oP '${{ inputs.name-of-version-string }} = \s*\K\d+' ${{ inputs.path-to-control-file }})" >> $GITHUB_ENV
+
+    - name: Get build information from file
+      shell: bash
+      run: echo "BUILD_NUMBER = $(grep -oP '${{ inputs.name-of-build-string }} = \s*\K\d+' ${{ inputs.path-to-control-file }})" >> $GITHUB_ENV
+
+    - name: Setup JAVA
+      uses: actions/setup-java@v4.0.0
+      with:
+        distribution: 'adopt'
+        java-version: ${{ inputs.java-version }}
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v3.6.0
+        with:
+          node-version: ${{inputs.node-version}}
