@@ -1,10 +1,22 @@
 name: 'auto-build-android'
-description: 'Build the application and uploads it to the Google Play Store'
+description: 'Builds and signs the android application'
 inputs:
   path-to-control-file:
     description: 'The TSX file that holds the version-string and build number for Android'
     required: true
     default: constants.tsx
+
+  keystore-secret:
+    description: 'Secret-variable with the base64 encoded keystore certificate'
+    required: true
+
+  keystore-alias:
+    description: 'The alias for the keystore certificate'
+    required: true
+
+  keystore-password:
+    description: 'The password for the keystore certificate'
+    required: true
 
   name-of-version-string:
     description: 'The name of the version-string variable on the TSX file'
@@ -48,3 +60,40 @@ runs:
       uses: actions/setup-node@v3.6.0
       with:
         node-version: ${{inputs.node-version}}
+
+    - name: Unpack Keystore file
+      shell: bash
+      run: base64 -d << ${{inputs.keystore-secret}} > keyfile.jks
+
+    - name: Build the app and generate Android files
+      shell: bash
+      env:
+        CI: ""
+      run: |
+        echo "Building the app ..."
+        ionic --max_old_space_size=2048 build
+        echo "Generate Android files ..."
+        ionic capacitor copy android
+        echo "Build android-dev version ..."
+        ionic capacitor build android
+        echo "Build android-prod version ..."
+        ionic capacitor build android --release --prod
+
+    - name: Generate the resources
+      shell: bash
+      run: npx @capacitor/assets generate --android
+
+    - name: Update versioning on source files
+      shell: bash
+      run: |
+        echo "Change build number ..."
+        sed -i "s/versionCode 1/versionCode ${{env.BUILD_NUMBER}}/g" android/app/build.gradle
+        echo "Change version number ..."
+        sed -i "s/versionName \"1.0\"/versionName \"${{env.VERSION_STRING}}\"/g" android/app/build.gradle 
+        echo "Display changes on android/app/build.gradle"
+        cat android/app/build.gradle
+    
+
+    - name: Sign the release app
+      shell: bash
+      run: npx cap build android --androidreleasetype=AAB --keystorealias=${{ secrets.KEYALIAS }} --keystorealiaspass=${{ secrets.KEYPASS }} --keystorepass=${{ secrets.KEYPASS }} --keystorepath=${{ github.action_path }}/'keyfile.jks'
