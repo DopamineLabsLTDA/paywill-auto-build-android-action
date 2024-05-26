@@ -65,6 +65,14 @@ runs:
       shell: bash
       run: base64 -d << ${{inputs.keystore-secret}} > keyfile.jks
 
+    - name: Setup IONIC
+      shell: bash
+      run: npm install -g @ionic/cli
+
+    - name: Install app dependencies
+      shell: bash
+      run: npm install
+
     - name: Build the app and generate Android files
       shell: bash
       env:
