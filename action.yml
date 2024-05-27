@@ -108,4 +108,4 @@ runs:
 
     - name: Sign the release app
       shell: bash
-      run: npx cap build android --androidreleasetype=AAB --keystorealias=${{ inputs.keystore-alias }} --keystorealiaspass=${{ inputs.keystore-password }} --keystorepass=${{ inputs.keystore-password }} --keystorepath=${{ github.action_path }}/'keyfile.jks'
+      run: npx cap build android --androidreleasetype=AAB --keystorealias=${{ inputs.keystore-alias }} --keystorealiaspass=${{ inputs.keystore-password }} --keystorepass=${{ inputs.keystore-password }} --keystorepath=${{ github.action_path }}/keyfile.jks
