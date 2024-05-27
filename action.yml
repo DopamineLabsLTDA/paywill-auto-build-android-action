@@ -45,15 +45,14 @@ runs:
     - name: Setup version string and build number
       id: globals
       shell: bash
-      run: cat ${{inputs.path-to-control-file}}
+      run: |
+        echo "VERSION_STRING = $(grep -oP '${{ inputs.name-of-version-string }} = \s*\K\d+' ${{ inputs.path-to-control-file }})" >> "${GITHUB_OUTPUT}"
+        echo "BUILD_NUMBER = $(grep -oP '${{ inputs.name-of-build-string }} = \s*\K\d+' ${{ inputs.path-to-control-file }})" >> "${GITHUB_OUTPUT}"
     
-    - name: Get version-string information from file
+    - name: Inform the data readed from control file
       shell: bash
-      run:  echo "VERSION_STRING = $(grep -oP '${{ inputs.name-of-version-string }} = \s*\K\d+' ${{ inputs.path-to-control-file }})" >> $GITHUB_ENV
-
-    - name: Get build information from file
-      shell: bash
-      run: echo "BUILD_NUMBER = $(grep -oP '${{ inputs.name-of-build-string }} = \s*\K\d+' ${{ inputs.path-to-control-file }})" >> $GITHUB_ENV
+      run: |
+        echo "Found VERSION_STRING: ${{steps.globals.outputs.VERSION_STRING}} and BUILD_NUMBER: ${{steps.globals.outputs.BUILD_NUMBER}}"
 
     - name: Setup JAVA
       uses: actions/setup-java@v4.0.0
