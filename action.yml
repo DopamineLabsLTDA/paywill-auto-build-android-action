@@ -42,12 +42,11 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Setup version string and build number
+    - name: Check if version and build string are present on control-file
       shell: bash
       run: |
-        echo "VERSION_STRING = $(grep -oP '${{ inputs.name-of-version-string }} = \s*\K\d+' ${{ inputs.path-to-control-file }})" >> $GITHUB_ENV
-        echo "BUILD_NUMBER = $(grep -oP '${{ inputs.name-of-build-string }} = \s*\K\d+' ${{ inputs.path-to-control-file }})" >> $GITHUB_ENV
-        echo "Found VERSION_STRING: ${{env.VERSION_STRING}} and BUILD_NUMBER: ${{env.BUILD_NUMBER}}"
+        if [ $(grep -oP '${{ inputs.name-of-version-string }} = \s*\K\d+' ${{ inputs.path-to-control-file }}) ]; then echo "Version string present!"; else exit(1); fi
+        if [ $(grep -oP '${{ inputs.name-of-build-string }} = \s*\K\d+' ${{ inputs.path-to-control-file }}) ]; then echo "Build number present!"; else exit(1); fi
 
     - name: Setup JAVA
       uses: actions/setup-java@v4.0.0
@@ -94,9 +93,9 @@ runs:
       shell: bash
       run: |
         echo "Change build number ..."
-        sed -i "s/versionCode 1/versionCode ${{env.BUILD_NUMBER}}/g" android/app/build.gradle
+        sed -i "s/versionCode 1/versionCode $(grep -oP '${{ inputs.name-of-build-string }} = \s*\K\d+' ${{ inputs.path-to-control-file }})/g" android/app/build.gradle
         echo "Change version number ..."
-        sed -i "s/versionName \"1.0\"/versionName \"${{env.VERSION_STRING}}\"/g" android/app/build.gradle 
+        sed -i "s/versionName \"1.0\"/versionName \"$(grep -oP '${{ inputs.name-of-version-string }} = \s*\K\d+' ${{ inputs.path-to-control-file }})\"/g" android/app/build.gradle 
         echo "Display changes on android/app/build.gradle"
         cat android/app/build.gradle
     
