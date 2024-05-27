@@ -71,7 +71,7 @@ runs:
 
     - name: Unpack Keystore file
       shell: bash
-      run: base64 -d << ${{inputs.keystore-secret}} > ${{ github.action_path }}/keyfile.jks
+      run: base64 -d <<< ${{inputs.keystore-secret}} > ${{ github.action_path }}/keyfile.jks
 
     - name: Setup IONIC
       shell: bash
@@ -89,7 +89,7 @@ runs:
         echo "Building the app ..."
         ionic --max_old_space_size=2048 build
         echo "Generate Android files ..."
-        ionic capacitor copy android
+        ionic capacitor copy androida
         echo "Build android-dev version ..."
         ionic capacitor build android
         echo "Build android-prod version ..."
