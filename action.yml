@@ -52,7 +52,7 @@ runs:
       run: |
         cat ${{ inputs.path-to-control-file }}
         if [ ${GITHUB_REF#refs/*/} ]; then echo "Version string is ${GITHUB_REF#refs/*/}"; else exit 1; fi
-        sed -i "s/${{inputs.name-of-version-placeholder}}/${{GITHUB_REF#refs/*/}}/g" ${{inputs.path-to-control-file}}
+        sed -i "s/${{inputs.name-of-version-placeholder}}/${GITHUB_REF#refs/*/}/g" ${{inputs.path-to-control-file}}
         if [ $(grep -oP '${{ inputs.name-of-build-string }} = \s*\K\d+' ${{ inputs.path-to-control-file }}) ]; then echo "Build number present!"; else exit 1; fi
 
     - name: Setup JAVA
