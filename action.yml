@@ -45,6 +45,7 @@ runs:
     - name: Check if version and build string are present on control-file
       shell: bash
       run: |
+        cat ${{inputs.path-to-control-file}}
         if [ $(grep -oP '${{ inputs.name-of-version-string }} = \s*\K\d+' ${{ inputs.path-to-control-file }}) ]; then echo "Version string present!"; else exit 1; fi
         if [ $(grep -oP '${{ inputs.name-of-build-string }} = \s*\K\d+' ${{ inputs.path-to-control-file }}) ]; then echo "Build number present!"; else exit 1; fi
 
