@@ -50,9 +50,7 @@ runs:
     - name: Check if version and build string are present on control-file. Locally change version string to tag
       shell: bash
       run: |
-        echo "TESTING : ${GITHUB_REF}"
-        if [ ${GITHUB_REF#refs/*/} ]; then echo "Version string is ${GITHUB_REF#refs/*/}"; else exit 1; fi
-        sed -i "s/${{inputs.name-of-version-placeholder}}/${GITHUB_REF#refs/*/}/g" ${{inputs.path-to-control-file}}
+        if [ $(grep -oP "${{inputs.name-of-version-string}} = 'Versión\s*\K[^';]+" ${{ inputs.path-to-control-file }}) ]; then echo "Version string present!"; else exit 1; fi
         if [ $(grep -oP '${{ inputs.name-of-build-string }} = \s*\K\d+' ${{ inputs.path-to-control-file }}) ]; then echo "Build number present!"; else exit 1; fi
 
     - name: Setup JAVA
@@ -100,7 +98,7 @@ runs:
       shell: bash
       run: |
         echo "Change build number ..."
-        sed -i "s/versionCode 1/versionCode $(grep -oP '${{ inputs.name-of-build-string }} = \s*\K\d+' ${{ inputs.path-to-control-file }})/g" android/app/build.gradle
+        sed -i "s/versionCode 1/versionCode $(grep -oP "${{inputs.name-of-version-string}} = 'Versión\s*\K[^';]+" ${{ inputs.path-to-control-file }})/g" android/app/build.gradle
         echo "Change version number ..."
         sed -i "s/versionName \"1.0\"/versionName \"${GITHUB_REF#refs/*/}\"/g" android/app/build.gradle 
         echo "Display changes on android/app/build.gradle"
