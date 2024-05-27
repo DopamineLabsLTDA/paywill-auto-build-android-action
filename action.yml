@@ -54,9 +54,9 @@ runs:
         if [ $(grep -oP '${{ inputs.name-of-build-string }} = \s*\K\d+' ${{ inputs.path-to-control-file }}) ]; then echo "Build number present!"; else exit 1; fi
     
     - name: Setup python
-              uses: actions/setup-python@v5.1.0
-              with:
-                python-version: '3.10'
+      uses: actions/setup-python@v5.1.0
+      with:
+        python-version: '3.10'
     
     - name: Setup JAVA
       uses: actions/setup-java@v4.0.0
