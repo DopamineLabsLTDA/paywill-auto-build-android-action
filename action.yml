@@ -42,6 +42,11 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Setup version string and build number
+      id: globals
+      shell: bash
+      run: cat ${{inputs.path-to-control-file}}
+    
     - name: Get version-string information from file
       shell: bash
       run:  echo "VERSION_STRING = $(grep -oP '${{ inputs.name-of-version-string }} = \s*\K\d+' ${{ inputs.path-to-control-file }})" >> $GITHUB_ENV
