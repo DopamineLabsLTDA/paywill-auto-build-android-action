@@ -19,7 +19,7 @@ def writeBuildFile(build_file, version_string, build_number):
         data = re.sub(f"versionCode {DEFAULT_BUILD_NUMBER}", f"versionCode {build_number}", data)
 
         # Change version name
-        data = re.sub(f'versionName "{DEFAULT_VERSION_NAME}"', f'versionName "{version_name}"', data)
+        data = re.sub(f'versionName "{DEFAULT_VERSION_NAME}"', f'versionName "{version_string}"', data)
 
         # Write
         f.write(data)
