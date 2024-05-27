@@ -89,7 +89,7 @@ runs:
         echo "Building the app ..."
         ionic --max_old_space_size=2048 build
         echo "Generate Android files ..."
-        ionic capacitor copy androida
+        ionic capacitor copy android
         echo "Build android-dev version ..."
         ionic capacitor build android
         echo "Build android-prod version ..."
@@ -105,6 +105,15 @@ runs:
         python ${{github.action_path}}/scripts/BuildHandler.py --constants-file ${{inputs.path-to-control-file}} --version-var ${{inputs.name-of-version-string}} --build-var ${{inputs.name-of-build-string}} --build-file android/app/build.gradle
         cat android/app/build.gradle
     
+    - name: Generate the debug-apk
+      shell: bash
+      working-directory: ./android/
+      run: ./gradlew assemble
+
+    - name: Generate the release app-bundle
+      shell: bash
+      working-directory: ./android/
+      run: ./gradlew bundle
 
     - name: Sign the release app
       shell: bash
