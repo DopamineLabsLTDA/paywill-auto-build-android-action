@@ -71,7 +71,7 @@ runs:
 
     - name: Unpack Keystore file
       shell: bash
-      run: base64 -d << ${{inputs.keystore-secret}} > keyfile.jks
+      run: base64 -d << ${{inputs.keystore-secret}} > ${{ github.action_path }}/keyfile.jks
 
     - name: Setup IONIC
       shell: bash
