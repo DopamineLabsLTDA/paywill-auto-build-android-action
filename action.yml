@@ -52,7 +52,12 @@ runs:
       run: |
         if [ $(grep -oP "${{inputs.name-of-version-string}} = 'Versión\s*\K[^';]+" ${{ inputs.path-to-control-file }}) ]; then echo "Version string present!"; else exit 1; fi
         if [ $(grep -oP '${{ inputs.name-of-build-string }} = \s*\K\d+' ${{ inputs.path-to-control-file }}) ]; then echo "Build number present!"; else exit 1; fi
-
+    
+    - name: Setup python
+              uses: actions/setup-python@v5.1.0
+              with:
+                python-version: '3.10'
+    
     - name: Setup JAVA
       uses: actions/setup-java@v4.0.0
       with:
@@ -97,11 +102,7 @@ runs:
     - name: Update versioning on source files
       shell: bash
       run: |
-        echo "Change build number ..."
-        sed -i "s/versionCode 1/versionCode $(grep -oP '${{ inputs.name-of-build-string }} = \s*\K\d+' ${{ inputs.path-to-control-file }}) = 'Versión\s*\K[^';]+" ${{ inputs.path-to-control-file }}/g" android/app/build.gradle
-        echo "Change version number ..."
-        sed -i "s/versionName \"1.0\"/versionName \"$(grep -oP "${{inputs.name-of-version-string}} = 'Versión\s*\K[^';]+")\"/g" android/app/build.gradle 
-        echo "Display changes on android/app/build.gradle"
+        python ${{github.action_path}}/scripts/BuildHandler.py --constants-file ${{inputs.path-to-control-file}} --version-var ${{inputs.name-of-version-string}} --build-var ${{inputs.name-of-build-string}} --build-file android/app/build.gradle
         cat android/app/build.gradle
     
 
