@@ -88,10 +88,6 @@ runs:
       run: |
         echo "Building the app ..."
         ionic --max_old_space_size=2048 build
-        echo "Generate Android files ..."
-        ionic capacitor copy android
-        echo "Build android-dev version ..."
-        ionic capacitor build android
         echo "Build android-prod version ..."
         ionic capacitor build android --release --prod
 
