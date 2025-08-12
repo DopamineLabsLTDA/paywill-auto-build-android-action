@@ -101,12 +101,26 @@ runs:
         echo "Building the app ..."
         ionic --max_old_space_size=2048 build
         echo "Build android-prod version ..."
-        ionic capacitor build android --release --prod
 
+    - name: Add & Sync Android platform
+      shell: bash
+      run: |
+        if [ ! -d "android" ]; then
+          npx cap add android
+        fi
+        npx cap sync android
+        
     - name: Generate the resources
       shell: bash
       run: npx @capacitor/assets generate --android
 
+    - name: Build Android (Gradle)
+      shell: bash
+      working-directory: ./android
+      run: |
+        ./gradlew assembleDebug
+        ./gradlew bundleRelease
+        
     - name: Update versioning on source files
       shell: bash
       run: |
